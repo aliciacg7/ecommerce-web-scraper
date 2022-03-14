@@ -2,6 +2,7 @@ import re
 from bs4 import BeautifulSoup
 import whois
 import requests
+import json
 
 
 
@@ -58,8 +59,6 @@ class ProductsScraper():
             }
 
         session = requests.Session()
-
-        session = requests.Session()
         session.cookies.set(**my_cookie)
 
        
@@ -70,17 +69,36 @@ class ProductsScraper():
         #))
 
         #try:
-        page = session.get(link_amazon, headers=headers, )
+        page = session.get(link_amazon, headers=headers)
         #if page.status_code == 200:
         soup = BeautifulSoup(page.content, features="html.parser")
-        print(soup.span.prettify())
 
-        #except Exception as e:
-        #    print(e)
+        #data = soup.find("span", attrs={"class": 'a-size-base-plus'})
+ 
+        products = soup.find_all('span', attrs={"class": 'a-size-base-plus'})
 
+        prices = soup.find_all('span', attrs={"class": 'a-price-whole'})
 
+        prod_data = soup.find_all('div', attrs={"class": 's-card-container'})
+        # s-overflow-hidden aok-relative s-expand-height s-include-content-margin s-latency-cf-section s-card-border"
+        
 
+        json_l = []
+        json_p = []
 
-
-        #print(whois.whois(link_amazon))
-        #print(whois.whois(link_eci))
+        f = open("amazon_test.html", "w", encoding='utf8')
+        for pd in prod_data:
+            f.write("-----CHILDREN BATCH")
+            for ch in pd.children:
+                f.write(str(ch))
+        #for s in products:
+        #    json_l.append({
+        #        "product": s.string
+        #    })
+        #for p in prices:
+        #    json_p.append({
+        #        "price": p.string
+        #    })
+        #    f.write(json.dumps(json_l, ensure_ascii=False))
+        #    f.write(json.dumps(json_p, ensure_ascii=False))
+        f.close()
