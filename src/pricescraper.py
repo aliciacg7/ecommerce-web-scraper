@@ -85,7 +85,7 @@ class ProductsScraper():
         json_p = []
 
 
-        f = open("amazon_test.json", "w", encoding='utf8')
+        f = open("data/amazon_test.json", "w", encoding='utf8')
         for pd in prod_data:
 
             prices = pd.find('span', attrs={"class": 'a-price-whole'})
