@@ -75,30 +75,56 @@ class ProductsScraper():
 
         #data = soup.find("span", attrs={"class": 'a-size-base-plus'})
  
-        products = soup.find_all('span', attrs={"class": 'a-size-base-plus'})
+        #products = soup.find_all('span', attrs={"class": 'a-size-base-plus'})
 
-        prices = soup.find_all('span', attrs={"class": 'a-price-whole'})
+        #prices = soup.find_all('span', attrs={"class": 'a-price-whole'})
 
         prod_data = soup.find_all('div', attrs={"class": 's-card-container'})
-        # s-overflow-hidden aok-relative s-expand-height s-include-content-margin s-latency-cf-section s-card-border"
         
-
         json_l = []
         json_p = []
 
-        f = open("amazon_test.html", "w", encoding='utf8')
+
+        f = open("amazon_test.json", "w", encoding='utf8')
         for pd in prod_data:
-            f.write("-----CHILDREN BATCH")
-            for ch in pd.children:
-                f.write(str(ch))
-        #for s in products:
-        #    json_l.append({
-        #        "product": s.string
-        #    })
-        #for p in prices:
-        #    json_p.append({
-        #        "price": p.string
-        #    })
-        #    f.write(json.dumps(json_l, ensure_ascii=False))
-        #    f.write(json.dumps(json_p, ensure_ascii=False))
+
+            prices = pd.find('span', attrs={"class": 'a-price-whole'})
+            products = pd.find('span', attrs={"class": 'a-size-base-plus a-color-base a-text-normal'})
+            rating = pd.find('span', attrs={"class": 'a-icon-alt'})
+            n_comments = pd.find('span', attrs={"class": 'a-size-base s-underline-text'})
+            image = pd.find('img', attrs={"class": 's-image'})
+
+
+            #a-size-base s-underline-text
+
+            json_l.append({
+                "products": products.string if products else "",
+                "price": float(prices.string.replace(',', '.')) if prices else 0,
+                "rating": float(rating.string.split('de')[0].replace(',', '.')) if rating else 0,
+                "n_comments": int(n_comments.string.replace('.', '')) if n_comments else 0,
+                "image": image.get('src') if image else ""
+            })
+
+            
+            
+
+
+            
+            
+            
+            #for ch in pd.children:
+            
+            #for s in products:
+            #    json_l.append({
+            #        "product": s.string
+            #    })
+            #for p in prices:
+            #    json_p.append({
+            #        "price": p.string
+            #    })
+                
+            #f.write("\n***PRODUCTS: \n")
+        f.write(json.dumps(json_l, ensure_ascii=False))
+            #f.write("\n***PRICES: \n")
+            #f.write(json.dumps(json_p, ensure_ascii=False))
         f.close()
