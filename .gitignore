@@ -19,3 +19,7 @@ build/
 
 # Built Visual Studio Code Extensions
 *.vsix
+
+# Generared documents
+data/*.json
+data/*.html
