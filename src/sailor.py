@@ -9,21 +9,21 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import sys
 
+from pricescraper import ProductsScraper
+
 class Sailor():
 
     def esperarCarga(self, webdriver, tipo_elemento, atributo, valor, timeout):
 
         # Timeout (segundos) para cargar la pagina
-        delay = 3
+        delay = 2
 
         # XPath del elemento a esperar
         params_busqueda = '//{}[@{}="{}'.format(tipo_elemento, atributo, valor)
 
         try:
-
             # Esperar a que cargue el boton de la siguiente pagina
             elemento = WebDriverWait(webdriver, timeout).until(EC.presence_of_element_located((By.XPATH, params_busqueda)))
-
             print("Page is ready!")
 
             return elemento
@@ -34,33 +34,36 @@ class Sailor():
             sys.exit("Error message")
 
     def search_amazon(self, item):
+        pscraper = ProductsScraper()
 
         # Crear webbrowser y entrar en amazon
         driver = webdriver.Chrome(service = Service(ChromeDriverManager().install()))
-        driver.get('https://www.amazon.com')
+        driver.get('https://www.amazon.es')
 
         # Introducir en barra de búsqueda el parámetro
         search_box = driver.find_element(by="id", value='twotabsearchtextbox').send_keys(item)
         search_button = driver.find_element(by="id", value="nav-search-submit-text").click()
 
         # Navegar en las primeras 5 paginas de amazon
-        for y in range(0,5):
+        for y in range(0,2):
 
             # URL de la pagina actual
             currentPage = driver.current_url
 
             # Abrir los primeros 5 primeros elementos
-            for i in range(2,6):
+            for i in range(2,20):
                 try:
 
                     # Esperamos a los resultados de la búsqueda se carguen
-                    esperarCarga(driver, "div", "cel_widget_id", 'MAIN-SEARCH_RESULTS-'+str(i)+'"]/div/div/div/div/div', 3).click()
+                    self.esperarCarga(driver, "div", "cel_widget_id", 'MAIN-SEARCH_RESULTS-'+str(i)+'"]/div/div/div/div/div', 8).click()
 
                     # Esperamos a que carguen los detalles del producto
                     #esperarCarga(driver, "div", "id", 'productDescription"]', 3)
 
                     # URL del producto
                     print(driver.current_url)
+                    pscraper.scrappingProduct(driver.current_url)
+                    print("_________")
 
                     # Volver a la pagina principal
                     driver.get(currentPage)
@@ -71,7 +74,7 @@ class Sailor():
                 print("Producto {} finalizado".format(i))
 
                 # Esperar a que cargue el boton de Siguiente pagina
-            nextPageButton = esperarCarga(driver, "a", "class", 's-pagination-item s-pagination-next s-pagination-button s-pagination-separator"]', 3)
+            nextPageButton = self.esperarCarga(driver, "a", "class", 's-pagination-item s-pagination-next s-pagination-button s-pagination-separator"]', 3)
 
             nextPageButton.click()
 
@@ -79,4 +82,4 @@ class Sailor():
 
 # Buscar cualquier termino
 buscador = Sailor()
-buscador.search_amazon('camiseta roja')
+buscador.search_amazon('pantalones')
