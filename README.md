@@ -8,7 +8,12 @@ Esta práctica ha sido realizada por **Alicia Contreras** y **Daniel García**.
 
 ## Motivación
 
-El principal motivo del desarrollo de esta herramienta es facilitar una búsqueda preliminar de productos online utilizando técnicas de ciencia de datos en una tarea que se suele hacer manualmente. 
+El principal motivo del desarrollo de esta herramienta es facilitar una búsqueda preliminar de productos online utilizando técnicas de ciencia de datos en una tarea que se suele hacer manualmente. A continuación se describen otras motivaciones para la utilización de esta herramienta:
+
+* Realizar un análisis comparativo de precios de productos con respecto a otras webs de e-commerce
+* Realizar un estudio del posicionamiento de productos y del funcionamiento de los buscadores en webs de e-commerce
+* Obtención de datasets de imágenes para entrenamiento de algoritmos de clasificación, categorizados con la clase referente a la palabra de búsqueda utilizada por el usuario
+
 
 También es destacable la oportunidad de utilizar estas herramientas en datos reales.
 
@@ -26,11 +31,13 @@ Utilizando como ejemplo el comando superior, se generará un dataset de los resu
 
 Los datos que se extraen de los resultados de la búsqueda de Amazon son:
 
-* **products**: nombre del producto
-* **price**: precio del producto
-* **rating**: valoración del producto
-* **n_coments**: número de comentarios de usuarios
-* **image**: url de la imagen principal del producto
+* **product**: Nombre del producto. Tipo: *String*
+* **brand**: Marca del producto. Tipo: *String*
+* **price**: Precio del producto. Tipo: *Float*
+* **discount_percent**: Porcentaje de descuento aplicado. Tipo: *Float*
+* **rating**: Valoración del producto sobre 5. Tipo: *Float*
+* **n_coments**: Número de comentarios de usuarios. Tipo: *Integer*
+* **image**: Url de la imagen principal del producto. Tipo: *String*
 
 ## Futuros pasos
 

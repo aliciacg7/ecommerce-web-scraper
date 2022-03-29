@@ -129,7 +129,6 @@ class ProductsScraper():
         json_l = []
 
 
-        #f = open("data/amazon_test.json", "w", encoding='utf8')
         for pd in prod_data:
 
             prices = pd.find('span', attrs={"class": 'a-price-whole'})
@@ -146,7 +145,10 @@ class ProductsScraper():
             discount_percent = None
 
             if prices:
-                price_num = float(prices.string.replace(',', '.'))
+                maketrans = prices.string.maketrans
+                price_num = float(prices.string.translate(maketrans(',.', '.,', ' ')).replace(',', ''))
+
+            
 
         
             if price_discount and price_num:
@@ -156,16 +158,14 @@ class ProductsScraper():
 
 
             json_l.append({
-                "products": products.string if products else None,
+                "product": products.string if products else None,
                 "brand": brand.string if brand else None,
                 "price": price_num,
-                "price_discount": discount_percent,
-                "rating": float(rating.string.split('de')[0].replace(',', '.')) if rating else None,
+                "discount_percent": discount_percent,
+                "rating": float(rating.string.split('de')[0].replace(',', '.')) if rating and 'de 5 estrellas' in rating.string else None,
                 "n_comments": int(n_comments.string.replace('.', '')) if n_comments else 0,
                 "image": image.get('src') if image else None
             })
 
         return json_l
-                
-        #f.write(json.dumps(json_l, ensure_ascii=False))
-        #f.close()
+            
