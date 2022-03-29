@@ -2,7 +2,7 @@
 
 ## Introducción
 
-Este código forma parte de la **PRA1** de la asignatura Tipología y Ciclo de Vida de los Datos, en la que se utilizan técnicas de web scrapping con Python para la obtención  de datos de productos de Amazon y generar un dataset con ellos.
+Este código forma parte de la **PRA1** de la asignatura Tipología y Ciclo de Vida de los Datos, en la que se utilizan técnicas de web scrapping en Python con BeatifulSoup y Selenium para la obtención  de datos de productos de Amazon y generar un dataset con ellos. 
 
 Esta práctica ha sido realizada por **Alicia Contreras** y **Daniel García**.
 
@@ -14,7 +14,6 @@ El principal motivo del desarrollo de esta herramienta es facilitar una búsqued
 * Realizar un estudio del posicionamiento de productos y del funcionamiento de los buscadores en webs de e-commerce
 * Obtención de datasets de imágenes para entrenamiento de algoritmos de clasificación, categorizados con la clase referente a la palabra de búsqueda utilizada por el usuario
 
-
 También es destacable la oportunidad de utilizar estas herramientas en datos reales.
 
 ## Instrucciones de uso
@@ -22,7 +21,7 @@ También es destacable la oportunidad de utilizar estas herramientas en datos re
 El código permite al usuario generar un dataset a partir de un término de búsqueda de la siguiente manera:
 
 ```
-python sailor.py "playstation 4"
+python src/sailor.py "playstation 4"
 ```
 
 Utilizando como ejemplo el comando superior, se generará un dataset de los resultados de la búsqueda "playstation 4" con los datos definidos en el siguiente apartado **Descripción de los datos**
