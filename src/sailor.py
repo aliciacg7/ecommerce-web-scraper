@@ -39,7 +39,7 @@ class Sailor():
             sys.exit("Número máximo de paginas en Amazon: 7")
 
         # URLs con las paginas de Amazon
-        urls = []
+        #urls = []
         
         pscraper = ProductsScraper()
 
@@ -59,7 +59,7 @@ class Sailor():
 
             # URL de la pagina actual
             currentPage = driver.current_url
-            urls.append(currentPage)
+            #urls.append(currentPage)
 
             # Scrapping de la pagina actual           
             pscraper.scrappingProduct(driver.current_url)
@@ -70,8 +70,13 @@ class Sailor():
 
         driver.quit()
         
-        return urls
+        #return urls
 
-# Buscar cualquier termino
-buscador = Sailor()
-buscador.search_amazon('pantalones', 7)
+# Comprobar numero de argumentos
+if __name__ == "__main__":
+    if(len(sys.argv) == 2):
+        buscador = Sailor()
+        buscador.search_amazon(sys.argv[1], 7)
+    else:
+        print("Numero de argumento incorrecto. Uso del script:")
+        print('python sailor.py "{}"'.format("TERMINO_DE_BUSQUEDA"))
