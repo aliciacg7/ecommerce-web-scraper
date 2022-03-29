@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import sys
+import json
 
 from pricescraper import ProductsScraper
 
@@ -54,6 +55,10 @@ class Sailor():
         search_box = driver.find_element(by="id", value='twotabsearchtextbox').send_keys(item)
         search_button = driver.find_element(by="id", value="nav-search-submit-text").click()
 
+        # Abrimos un fichero donde se guardarán los resultados
+        f = open("data/amazon_dataset.json", "w", encoding='utf8')
+        json_products = []
+
         # Navegar en las primeras n paginas de amazon
         for y in range(0,n_paginas-1):
 
@@ -61,14 +66,20 @@ class Sailor():
             currentPage = driver.current_url
             #urls.append(currentPage)
 
-            # Scrapping de la pagina actual            
-            pscraper.scrappingProduct(driver.current_url)
+            # Scrapping de la pagina actual           
+            page_list = pscraper.scrappingProductsList(driver.current_url)
             
             # Esperar a que cargue el boton de Siguiente pagina
             nextPageButton = self.esperarCarga(driver, "a", "class", 's-pagination-item s-pagination-next s-pagination-button s-pagination-separator"]', 3)
             nextPageButton.click()
 
+            json_products += page_list
+
         driver.quit()
+
+        # Escribimos los resultados
+        f.write(json.dumps(json_products, ensure_ascii=False))
+        f.close()
         
         #return urls
 
