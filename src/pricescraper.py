@@ -114,8 +114,6 @@ class ProductsScraper():
 
         
     def scrappingProductsList(self, url):
-        #link_amazon = self.constructLinkAmazon(searchterm)
-        #link_eci = self.constructLinkECI(searchterm)
 
         session = requests.Session()
         session.cookies.set(**self.cookie)
@@ -131,10 +129,11 @@ class ProductsScraper():
         json_l = []
 
 
-        f = open("data/amazon_test.json", "w", encoding='utf8')
+        #f = open("data/amazon_test.json", "w", encoding='utf8')
         for pd in prod_data:
 
             prices = pd.find('span', attrs={"class": 'a-price-whole'})
+            price_discount = pd.find("span", attrs={"class": "a-price a-text-price", "data-a-strike": "true"})
             products = pd.find('span', attrs={"class": 'a-size-base-plus a-color-base a-text-normal'})
             brand = pd.find('span', attrs={"class": "a-size-base-plus a-color-base"})
             rating = pd.find('span', attrs={"class": 'a-icon-alt'})
@@ -142,14 +141,31 @@ class ProductsScraper():
             image = pd.find('img', attrs={"class": 's-image'})
 
 
+            # Treating prices
+            price_num = None
+            discount_percent = None
+
+            if prices:
+                price_num = float(prices.string.replace(',', '.'))
+
+        
+            if price_discount and price_num:
+                price_disc_str = price_discount.find('span', attrs={"class": 'a-offscreen'}).string
+                price_before_discount = float(price_disc_str[:-1].replace(',', '.'))
+                discount_percent = round((price_before_discount - price_num) / price_before_discount *100, 0)
+
+
             json_l.append({
                 "products": products.string if products else None,
                 "brand": brand.string if brand else None,
-                "price": float(prices.string.replace(',', '.')) if prices else None,
+                "price": price_num,
+                "price_discount": discount_percent,
                 "rating": float(rating.string.split('de')[0].replace(',', '.')) if rating else None,
                 "n_comments": int(n_comments.string.replace('.', '')) if n_comments else 0,
                 "image": image.get('src') if image else None
             })
+
+        return json_l
                 
-        f.write(json.dumps(json_l, ensure_ascii=False))
-        f.close()
+        #f.write(json.dumps(json_l, ensure_ascii=False))
+        #f.close()
