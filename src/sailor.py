@@ -106,7 +106,7 @@ class Sailor():
 if __name__ == "__main__":
     if(len(sys.argv) == 2):
         buscador = Sailor()
-        buscador.search_amazon(sys.argv[1], 2)
+        buscador.search_amazon(sys.argv[1], 7)
         buscador.formatearJSON()
         
     else:
