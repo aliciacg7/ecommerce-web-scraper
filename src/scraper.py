@@ -18,8 +18,8 @@ searchlink = args.link
 pscraper = ProductsScraper()
 
 
-pscraper.scrappingProduct(searchlink)
-#pscraper.scrappingProductsList(searchterm)
+#pscraper.scrappingProduct(searchlink)
+pscraper.scrappingProductsList(searchlink)
 
 
 

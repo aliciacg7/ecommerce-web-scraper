@@ -136,17 +136,19 @@ class ProductsScraper():
 
             prices = pd.find('span', attrs={"class": 'a-price-whole'})
             products = pd.find('span', attrs={"class": 'a-size-base-plus a-color-base a-text-normal'})
+            brand = pd.find('span', attrs={"class": "a-size-base-plus a-color-base"})
             rating = pd.find('span', attrs={"class": 'a-icon-alt'})
             n_comments = pd.find('span', attrs={"class": 'a-size-base s-underline-text'})
             image = pd.find('img', attrs={"class": 's-image'})
 
 
             json_l.append({
-                "products": products.string if products else "",
-                "price": float(prices.string.replace(',', '.')) if prices else 0,
-                "rating": float(rating.string.split('de')[0].replace(',', '.')) if rating else 0,
+                "products": products.string if products else None,
+                "brand": brand.string if brand else None,
+                "price": float(prices.string.replace(',', '.')) if prices else None,
+                "rating": float(rating.string.split('de')[0].replace(',', '.')) if rating else None,
                 "n_comments": int(n_comments.string.replace('.', '')) if n_comments else 0,
-                "image": image.get('src') if image else ""
+                "image": image.get('src') if image else None
             })
                 
         f.write(json.dumps(json_l, ensure_ascii=False))
