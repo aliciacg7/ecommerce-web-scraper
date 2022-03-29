@@ -99,7 +99,7 @@ class ProductsScraper():
             if 'de 5 estrellas' in rating_whole.string:
                 rating_str = rating_whole.string.split('de')[0].replace(',', '.')
                 rating = float(rating_str)
-
+                
         print({
             "products": product_name.string.lstrip().rstrip() if product_name else "",
             "price": price_num if price_num else 0.0,
@@ -113,56 +113,18 @@ class ProductsScraper():
 
 
         
-    def scrappingProductsList(self, searchterm):
-        link_amazon = self.constructLinkAmazon(searchterm)
-        link_eci = self.constructLinkECI(searchterm)
-
-        # Get Amazon products as a dataset
-
-        #headers = {
-        #    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,\
-        #    */*;q=0.8",
-        #    "Accept-Encoding": "gzip, deflate, sdch, br",
-        #    "Accept-Language": "en-US,en;q=0.8",
-        #    "Cache-Control": "no-cache",
-        #    "dnt": "1",
-        #    "Pragma": "no-cache",
-        #    "Upgrade-Insecure-Requests": "1",
-        #    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/5\
-        #    37.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36"
-        #}
-        #r = requests.get("http://www.example.com", headers=headers)
-
-        #cookie = {
-        #    "version":0,
-        #    "name":'COOKIE_NAME',
-        #    "value":'true',
-        #    "port":None,
-        #    "domain":'www.mydomain.com',
-        #    "path":'/',
-        #    "secure":False,
-        #    "expires":None,
-        #    "discard":True,
-        #    "comment":None,
-        #    "comment_url":None,
-        #    "rest":{},
-        #    "rfc2109":False
-        #    }
+    def scrappingProductsList(self, url):
+        #link_amazon = self.constructLinkAmazon(searchterm)
+        #link_eci = self.constructLinkECI(searchterm)
 
         session = requests.Session()
         session.cookies.set(**self.cookie)
 
 
         #try:
-        page = session.get(link_amazon, headers=self.headers)
+        page = session.get(url, headers=self.headers)
         #if page.status_code == 200:
         soup = BeautifulSoup(page.content, features="html.parser")
-
-        #data = soup.find("span", attrs={"class": 'a-size-base-plus'})
- 
-        #products = soup.find_all('span', attrs={"class": 'a-size-base-plus'})
-
-        #prices = soup.find_all('span', attrs={"class": 'a-price-whole'})
 
         prod_data = soup.find_all('div', attrs={"class": 's-card-container'})
         
