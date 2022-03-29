@@ -14,6 +14,7 @@ from pricescraper import ProductsScraper
 
 class Sailor():
 
+    # Esperar carga de un elemento determinado de la pagina
     def esperarCarga(self, webdriver, tipo_elemento, atributo, valor, timeout):
 
         # Timeout (segundos) para cargar la pagina
@@ -33,6 +34,8 @@ class Sailor():
             print(webdriver.current_url)
             sys.exit("Error message")
 
+    
+    # Realizar busqueda en Amazon 
     def search_amazon(self, item, n_paginas):
 
         # Solo puede haber 7 paginas
@@ -56,7 +59,7 @@ class Sailor():
         search_button = driver.find_element(by="id", value="nav-search-submit-text").click()
 
         # Abrimos un fichero donde se guardarán los resultados
-        f = open("data/amazon_dataset.json", "w", encoding='utf8')
+        f = open("data/amazon_dataset.json", "w+", encoding='utf8')
         json_products = []
 
         # Navegar en las primeras n paginas de amazon
@@ -83,11 +86,29 @@ class Sailor():
         
         #return urls
 
+
+    # Formatear archivo de datos
+    def formatearJSON(self):
+
+        # Abrir archivo
+        f_read = open("data/amazon_dataset.json", "r", encoding='utf8')
+        unparsed = json.load(f_read)
+        f_read.close()
+
+        parsed = json.dumps(unparsed, indent=1)
+
+        f_write = open("data/amazon_dataset.json", "w+", encoding='utf8')
+        f_write.write(parsed)
+        f_write.close()
+        
+
 # Comprobar numero de argumentos
 if __name__ == "__main__":
     if(len(sys.argv) == 2):
         buscador = Sailor()
-        buscador.search_amazon(sys.argv[1], 7)
+        buscador.search_amazon(sys.argv[1], 2)
+        buscador.formatearJSON()
+        
     else:
         print("Numero de argumento incorrecto. Uso del script:")
         print('python sailor.py "{}"'.format("TERMINO_DE_BUSQUEDA"))
