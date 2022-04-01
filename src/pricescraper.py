@@ -112,12 +112,37 @@ class ProductsScraper():
         })
 
 
+    def scrappingProductsListEci(self, prod):
+
+        session = requests.Session()
+        session.cookies.set(**self.cookie)
+
+        url = self.constructLinkECI(prod)
+        print(url)
+
+        #try: 
+        page = session.get(url, headers=self.headers)
+        #if page.status_code == 200:
+        soup = BeautifulSoup(page.content, features="html.parser")
+
+        prod_data = soup.find_all('li', attrs={"class": "products_list-item"})
+        
+        json_l = []
+
+        for pd in prod_data:
+            json_l.append(pd)
+
+        f = open("data/eci_dataset.json", "w+", encoding='utf8')
+        f.write(json.dumps(json_l, ensure_ascii=False))
+        f.close()
+
+
+
         
     def scrappingProductsList(self, url):
 
         session = requests.Session()
         session.cookies.set(**self.cookie)
-
 
         #try:
         page = session.get(url, headers=self.headers)
