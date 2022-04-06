@@ -8,6 +8,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from bs4 import BeautifulSoup
 import sys
 import json
 
@@ -102,6 +103,37 @@ class Sailor():
         f_write.write(parsed)
         f_write.close()
         
+        # Realizar busqueda en ECI 
+    def search_eci(self, item):
+        
+        # Crear webbrowser y entrar en amazon
+        driver = webdriver.Chrome(service = Service(ChromeDriverManager().install()))
+        driver.get('https://www.elcorteingles.es/')
+
+        # Aceptar cookies
+        driver.find_element(by='xpath', value='//*[@id="cookies-agree"]').click()
+
+        # Introducir en barra de búsqueda el parámetro
+        search_box = driver.find_element(by="id", value='main_search').send_keys(item)
+
+        driver.find_element(by='xpath', value='//*[@aria-label="Buscar"]').click()
+        
+        # Get HTML of all results
+        results_content = driver.find_element(by='id', value='products-list').get_attribute('outerHTML')
+
+        # Parse HTML and look for each product        
+        getpage_soup= BeautifulSoup(results_content, 'html.parser')
+        all_results= getpage_soup.findAll('li', {'class':'products_list-item'})
+
+        # Explore each element to get information
+        for element in all_results:
+            contenido = json.loads(element.span['data-json'])
+            print('PRODUCT:')
+            print(contenido['name'])
+            print(contenido['brand'])
+            print(contenido['price']['f_price'])
+            print(contenido['price']['discount_percent'])
+        driver.quit()
 
 # Comprobar numero de argumentos
 if __name__ == "__main__":
