@@ -1,29 +1,37 @@
 import re
 from bs4 import BeautifulSoup
-import whois
 import requests
 import json
+import random
 import re
-
+from time import sleep
 
 
 class ProductsScraper():
 
     def __init__(self):
         self.headers ={
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,\
-            */*;q=0.8",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
             "Accept-Encoding": "gzip, deflate, sdch, br",
-            "Accept-Language": "en-US,en;q=0.8",
+            "Accept-Language": "*",
             "Cache-Control": "no-cache",
+            "Cookie": "ocp=1; cookiesPolicy=11111; _gcl_au=1.1.425227982.1647185075; _fbp=fb.1.1647185076484.1085935914; _qubitTracker=04fgsk0qtj7-0l0pfgra8-i1y2gco; BVBRANDID=6da17aa1-8168-4e27-86ee-536fdf66afc2; qb_generic=:X+D4aEe:.elcorteingles.es; open_app=1; session_id=8f5ce7d5c52a665f49097ab46c256016482d506e00fc08aef1da11a475cbd019; _pin_unauth=dWlkPU5tVXpOemRoTnpJdFkyVmlZUzAwT1daaUxUZzBabUV0TXpBMk0yWTJZakJpTnpNMg; MADid=7f49ee90-2fa3-40e2-9016-74833aaa3958; tfc-l={\"a\":{\"v\":\"8d95a1fc-6260-4f27-9105-577cd9e77662\",\"e\":1647271709},\"k\":{\"v\":\"avv9f7hg0265n0uj5bhp93eduq\",\"e\":1710084510},\"c\":{\"v\":\"adult\",\"e\":1710084509}}; SSLB=1; popover_login=1; store=eciStore; centre=NULL; express=0; locale=es_ES; TLTSID=96622136634256064575185565822929; BVImplmain_site=4572; selectedSize=M; bm_sz=94AA65AA96404002915625F72BCAA35C~YAAQF7U+FxlY3Z9/AQAAb5OA8w9SLNcgI/VzvurNGk4yxD2aFiDowzfTdfWyE2aZeMIGO/f8slkqbJwC4MQli1QWxMATKsGiygSvlUvZ1CHkWQTdjyxNJFnL+yz+lqHo0kK5d78Cz5+XhJ/mJDjjoLO7lhg/nG6DI2zhKNjzIV+yFpM8Gv7lS90nAHsG6VydcAz9sMmn+rQS/TOH5r1DHeh8Z4Ztjnr2xnLR+I4z9cyJexE8uLxP5MkW9tPicjhtPVnHlrGr8R9xxafnKQYSKBwyz1HoPjzPkwt8a5mp5trfrr79XC3+7xU=~4605252~3617841; bm_mi=CD1BF6F1F9384A806093D8B0E7453ACF~LSymzMi4LF+Kq+TgUp5aVg+2XLnWnqvLtiHSkW+byeheFZOSVbPMnBF9OFD/7kSiMrw1Q4rVONvYC47eDdOoR42VrwrBMhEz6hqZewQwXnXKWxiT6LFSmEEL03y3ZbnWLPq4NZJNpnzeuvtbrpfR+4jfgqyxYy7aJhG6brEfZkDvzzUwtXWe+kk6DoEeBbpWUh3rObecIecLzznEmAtmEihR0BEnDgNA5g5GMFNDF02nWmYxAqdxIh0BVVJB8pUOITrBAqeLkZIpSrv8SD1r0w==; _gid=GA1.2.493578267.1649057769; _clck=1jdfpke|1|f0c|0; ak_bmsc=9DEA1AF8E0AF0A4183178853CD355B95~000000000000000000000000000000~YAAQF7U+FyVd3Z9/AQAA0dqA8w9vL6QDfM9k4pa59kW+wIrAQ5R6CnJ9gNw61OjUcY2L8Mz5t1w2BzkplAoreljhi7o5JbejLCPYeFu4SrPtLAdoicpQH1bjT+/qLuha8VB7GdJdGNuzcGdudpxg3nd0fjcA+LtUfceSQ6IqVs68pgzcR33XOoqz4RxR5Iv/xqed8mJ90DNYXEXgFg8Yq5C+Cjb5LrsijE39z4yrLSfRx+S8cmCENt9Txqd9+l6txsIRTbvs4DD9lXwLuKQx8sneM22dpuMC/8CYweQcdDvDnJGJ0lhQTt3TR44K7hMZ7cfX/Cgfjf2DnGz+tIVFj2OsV51CYiJOZ0CDLah6xGlS6mR47mY37y7aoO9h1kKpBAKHkOQodCqG1wCvYjISXM4SA0TqBTwWjDNu/AC+khFkiEnwsc/os2y6ONO/e2DAN3goIMgFBZiY331h1ANQAc3oxW5Dh/+6uYeXrbs=; babbc09f4fab077b4efb4cb013c3f704=1b40ed6a2e413c6184fb0e6cb5f9c921; SSID=CQC5ZR0cAAAAAABcXh5irADFDFxeHmIKAAAAAAAAAAAAJ7BKYgD53AIHAQG4-SIAJ7BKYgEApQYBAVbzIgAnsEpiAQA; SSSC=567.G7070192214462496940.10|67237.2290518:67330.2292152; SSRT=J7BKYgADAA; RT=\"z=1&dm=elcorteingles.es&si=9zozdj7bxl&ss=l1gnoa9q&sl=0&tt=0\"; _ga=GA1.2.1953228374.1646157412; qb_session=1:1:2::0:X/zwC/r:0:0:0:0:.elcorteingles.es; qb_permanent=04fgsk0qtj7-0l0pfgra8-i1y2gco:67:4:9:7:0::0:1:0:BiLgy1:BiSrAt:A:::::madrid:1715:spain:ES:::unknown:unknown:madrid:11413:migrated|1649061934037:EtrJ==E=CJQV=BW::X/zwDPV:X/zgKrY:0:0:0::0:0:.elcorteingles.es:0; rr_rcs=eF4Nx7kRgDAMBMDEEb2cR5-F1QF1-JshIAPqh802pacfIu5t2kIra8K4dpCJo8R_Wj6s2Xa99zkykzLYLcg5VEl3VIA_j10Rhg; _uetsid=e59ba240b3e911ec9ae64dd606fde177; _uetvid=b13933c0a2e111ecbc5349576776f44f; _abck=B905B88D010B19154B8378CCCD15933D~0~YAAQF7U+F2Hg4J9/AQAAhzXA8wdZlKRby9QJomuPHde7OXqvvsOnXbtkVJnB+gXNFWttl+xBLcpLinFChe6czORd1ThqS7241vLmp2G3jsdiV5qkdWjla6Yxk08vqGceVx5Kl+BXVaR+VqE0OTGlxnKuNdTZ/EfrMZ+ucvMq+obPRbQ98jqkLpMhD9HNX/eolrzPmvKN75rlFQw7bNsnm1V8KLxYIV6ds+xQifaEGLVxP2DTL7ojeqT/7R3Q/B4MCvSGZmBhiXOMnSDMNNPW0S//6bqdL0415mrqcK62baiCab4htTRJmWhSq2SAbRobkilQx5P1AykDa1NZPijYc5GwcQRpL8bwQnVqoa0bTStN349UmVdgnHkuDcBM4AASgljQXzuKY/PGdq+MX29t1TmPuGQx6YxnCidgBaS8~-1~||-1||~-1; SSPV=JgMAAAAAAAAAAwAAAAAAAAAAAAQAAAAAAAAAAAAA; _clsk=1oln4b4|1649061936834|2|0|f.clarity.ms/collect; BVBRANDSID=f87eb8b4-af2b-4bf6-a0ba-272bdb25fb20; _dc_gtm_UA-42384899-20=1; _ga_SWVN6ZZS8X=GS1.1.1649061927.5.1.1649061952.35",
             "dnt": "1",
             "Pragma": "no-cache",
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/5\
-            37.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36"
+            "User-Agent": self.getUserAgent(),
+            'x-test': 'true',
+            'x-test2': 'true',
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate"
         }
+        #self.cookie = {
+        #    "name":'COOKIE_NAME',
+        #    "value": "ocp=1; cookiesPolicy=11111; _gcl_au=1.1.425227982.1647185075; _fbp=fb.1.1647185076484.1085935914; _qubitTracker=04fgsk0qtj7-0l0pfgra8-i1y2gco; BVBRANDID=6da17aa1-8168-4e27-86ee-536fdf66afc2; qb_generic=:X+D4aEe:.elcorteingles.es; open_app=1; session_id=8f5ce7d5c52a665f49097ab46c256016482d506e00fc08aef1da11a475cbd019; _pin_unauth=dWlkPU5tVXpOemRoTnpJdFkyVmlZUzAwT1daaUxUZzBabUV0TXpBMk0yWTJZakJpTnpNMg; MADid=7f49ee90-2fa3-40e2-9016-74833aaa3958; tfc-l={\"a\":{\"v\":\"8d95a1fc-6260-4f27-9105-577cd9e77662\",\"e\":1647271709},\"k\":{\"v\":\"avv9f7hg0265n0uj5bhp93eduq\",\"e\":1710084510},\"c\":{\"v\":\"adult\",\"e\":1710084509}}; SSLB=1; popover_login=1; store=eciStore; centre=NULL; express=0; locale=es_ES; TLTSID=96622136634256064575185565822929; BVImplmain_site=4572; selectedSize=M; bm_sz=94AA65AA96404002915625F72BCAA35C~YAAQF7U+FxlY3Z9/AQAAb5OA8w9SLNcgI/VzvurNGk4yxD2aFiDowzfTdfWyE2aZeMIGO/f8slkqbJwC4MQli1QWxMATKsGiygSvlUvZ1CHkWQTdjyxNJFnL+yz+lqHo0kK5d78Cz5+XhJ/mJDjjoLO7lhg/nG6DI2zhKNjzIV+yFpM8Gv7lS90nAHsG6VydcAz9sMmn+rQS/TOH5r1DHeh8Z4Ztjnr2xnLR+I4z9cyJexE8uLxP5MkW9tPicjhtPVnHlrGr8R9xxafnKQYSKBwyz1HoPjzPkwt8a5mp5trfrr79XC3+7xU=~4605252~3617841; bm_mi=CD1BF6F1F9384A806093D8B0E7453ACF~LSymzMi4LF+Kq+TgUp5aVg+2XLnWnqvLtiHSkW+byeheFZOSVbPMnBF9OFD/7kSiMrw1Q4rVONvYC47eDdOoR42VrwrBMhEz6hqZewQwXnXKWxiT6LFSmEEL03y3ZbnWLPq4NZJNpnzeuvtbrpfR+4jfgqyxYy7aJhG6brEfZkDvzzUwtXWe+kk6DoEeBbpWUh3rObecIecLzznEmAtmEihR0BEnDgNA5g5GMFNDF02nWmYxAqdxIh0BVVJB8pUOITrBAqeLkZIpSrv8SD1r0w==; _gid=GA1.2.493578267.1649057769; _clck=1jdfpke|1|f0c|0; ak_bmsc=9DEA1AF8E0AF0A4183178853CD355B95~000000000000000000000000000000~YAAQF7U+FyVd3Z9/AQAA0dqA8w9vL6QDfM9k4pa59kW+wIrAQ5R6CnJ9gNw61OjUcY2L8Mz5t1w2BzkplAoreljhi7o5JbejLCPYeFu4SrPtLAdoicpQH1bjT+/qLuha8VB7GdJdGNuzcGdudpxg3nd0fjcA+LtUfceSQ6IqVs68pgzcR33XOoqz4RxR5Iv/xqed8mJ90DNYXEXgFg8Yq5C+Cjb5LrsijE39z4yrLSfRx+S8cmCENt9Txqd9+l6txsIRTbvs4DD9lXwLuKQx8sneM22dpuMC/8CYweQcdDvDnJGJ0lhQTt3TR44K7hMZ7cfX/Cgfjf2DnGz+tIVFj2OsV51CYiJOZ0CDLah6xGlS6mR47mY37y7aoO9h1kKpBAKHkOQodCqG1wCvYjISXM4SA0TqBTwWjDNu/AC+khFkiEnwsc/os2y6ONO/e2DAN3goIMgFBZiY331h1ANQAc3oxW5Dh/+6uYeXrbs=; babbc09f4fab077b4efb4cb013c3f704=1b40ed6a2e413c6184fb0e6cb5f9c921; SSID=CQC5ZR0cAAAAAABcXh5irADFDFxeHmIKAAAAAAAAAAAAJ7BKYgD53AIHAQG4-SIAJ7BKYgEApQYBAVbzIgAnsEpiAQA; SSSC=567.G7070192214462496940.10|67237.2290518:67330.2292152; SSRT=J7BKYgADAA; RT=\"z=1&dm=elcorteingles.es&si=9zozdj7bxl&ss=l1gnoa9q&sl=0&tt=0\"; _ga=GA1.2.1953228374.1646157412; qb_session=1:1:2::0:X/zwC/r:0:0:0:0:.elcorteingles.es; qb_permanent=04fgsk0qtj7-0l0pfgra8-i1y2gco:67:4:9:7:0::0:1:0:BiLgy1:BiSrAt:A:::::madrid:1715:spain:ES:::unknown:unknown:madrid:11413:migrated|1649061934037:EtrJ==E=CJQV=BW::X/zwDPV:X/zgKrY:0:0:0::0:0:.elcorteingles.es:0; rr_rcs=eF4Nx7kRgDAMBMDEEb2cR5-F1QF1-JshIAPqh802pacfIu5t2kIra8K4dpCJo8R_Wj6s2Xa99zkykzLYLcg5VEl3VIA_j10Rhg; _uetsid=e59ba240b3e911ec9ae64dd606fde177; _uetvid=b13933c0a2e111ecbc5349576776f44f; _abck=B905B88D010B19154B8378CCCD15933D~0~YAAQF7U+F2Hg4J9/AQAAhzXA8wdZlKRby9QJomuPHde7OXqvvsOnXbtkVJnB+gXNFWttl+xBLcpLinFChe6czORd1ThqS7241vLmp2G3jsdiV5qkdWjla6Yxk08vqGceVx5Kl+BXVaR+VqE0OTGlxnKuNdTZ/EfrMZ+ucvMq+obPRbQ98jqkLpMhD9HNX/eolrzPmvKN75rlFQw7bNsnm1V8KLxYIV6ds+xQifaEGLVxP2DTL7ojeqT/7R3Q/B4MCvSGZmBhiXOMnSDMNNPW0S//6bqdL0415mrqcK62baiCab4htTRJmWhSq2SAbRobkilQx5P1AykDa1NZPijYc5GwcQRpL8bwQnVqoa0bTStN349UmVdgnHkuDcBM4AASgljQXzuKY/PGdq+MX29t1TmPuGQx6YxnCidgBaS8~-1~||-1||~-1; SSPV=JgMAAAAAAAAAAwAAAAAAAAAAAAQAAAAAAAAAAAAA; _clsk=1oln4b4|1649061936834|2|0|f.clarity.ms/collect; BVBRANDSID=f87eb8b4-af2b-4bf6-a0ba-272bdb25fb20; _dc_gtm_UA-42384899-20=1; _ga_SWVN6ZZS8X=GS1.1.1649061927.5.1.1649061952.35"
+        #}
+        
         self.cookie = {
-            "version":0,
+            "version":4,
             "name":'COOKIE_NAME',
             "value":'true',
             "port":None,
@@ -38,12 +46,52 @@ class ProductsScraper():
             "rfc2109":False
             }
 
+        self.proxies = {
+            'http': 'http://10.10.1.10:3128',
+            'https': 'http://10.10.1.10:1080',
+            }
+
+    # Método para elegir un User Agent diferente en cada llamada y así evitar bloqueos
+
+    def getUserAgent(self):
+        user_agent_list = [
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/13.1.1 Safari/605.1.15',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:77.0) Gecko/20100101 Firefox/77.0',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
+            'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:77.0) Gecko/20100101 Firefox/77.0',
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+        ]
+        return random.choice(user_agent_list)
+    
+    def getProxy(self):
+        proxies = [
+            'http://114.121.248.251:8080',
+            'http://222.85.190.32:8090',
+            'http://47.107.128.69:888',
+            'http://41.65.146.38:8080',
+            'http://190.63.184.11:8080',
+            'http://45.7.135.34:999',
+            'http://141.94.104.25:8080',
+            'http://222.74.202.229:8080',
+            'http://141.94.106.43:8080',
+            'http://191.101.39.96:80'
+        ]
+        proxy = random.choice(proxies)
+        return({
+            'http': proxy,
+            'https': proxy
+            })
+        
+
+
     def constructLinkAmazon(self, searchterm):
-        searchitem_parsed = ("+").join(searchterm.split("."))
+        searchitem_parsed = ("+").join(searchterm.split(" "))
         return f"https://www.amazon.es/s?k={searchitem_parsed}"
 
     def constructLinkECI(self, searchterm):
-        searchitem_parsed = ("%20").join(searchterm.split("."))
+        searchitem_parsed = ("%20").join(searchterm.split(" "))
         return f"https://www.elcorteingles.es/search/?s={searchitem_parsed}"
 
     def scrappingProduct(self, prodlink):
@@ -116,6 +164,10 @@ class ProductsScraper():
 
         session = requests.Session()
         session.cookies.set(**self.cookie)
+        #session.auth = ('user', 'pass')
+        #session.headers.update({'x-test': 'true'})
+
+        sleep(3)
 
         url = self.constructLinkECI(prod)
         print(url)
@@ -132,8 +184,10 @@ class ProductsScraper():
         for pd in prod_data:
             json_l.append(pd)
 
-        f = open("data/eci_dataset.json", "w+", encoding='utf8')
-        f.write(json.dumps(json_l, ensure_ascii=False))
+        f = open("data/eci_dataset.html", "w+", encoding='utf8')
+        #f.write(json.dumps(json_l, ensure_ascii=False))
+        f.write(str(soup))
+
         f.close()
 
 
