@@ -103,36 +103,49 @@ class Sailor():
         f_write.write(parsed)
         f_write.close()
         
-        # Realizar busqueda en ECI 
+    # Realizar busqueda en ECI 
     def search_eci(self, item):
         
-        # Crear webbrowser y entrar en amazon
-        driver = webdriver.Chrome(service = Service(ChromeDriverManager().install()))
+        # Crear webbrowser y 
+        options = webdriver.ChromeOptions()
+        options.add_argument('--no-sandbox')
+        options.add_argument('--disable-gpu')
+        options.add_argument(f'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36') #add to
+        
+        driver = webdriver.Chrome(service = Service(ChromeDriverManager().install()), options=options)
         driver.get('https://www.elcorteingles.es/')
 
         # Aceptar cookies
         driver.find_element(by='xpath', value='//*[@id="cookies-agree"]').click()
+        driver.delete_all_cookies()
 
         # Introducir en barra de búsqueda el parámetro
         search_box = driver.find_element(by="id", value='main_search').send_keys(item)
 
         driver.find_element(by='xpath', value='//*[@aria-label="Buscar"]').click()
         
-        # Get HTML of all results
-        results_content = driver.find_element(by='id', value='products-list').get_attribute('outerHTML')
-
-        # Parse HTML and look for each product        
-        getpage_soup= BeautifulSoup(results_content, 'html.parser')
+        # Esperar a que termine la validacion
+        time.sleep(10)
+            
+        # Obtener lista de los resultados de la busqueda
+        raw_results = driver.find_element(by='id', value='products-list').get_attribute('innerHTML')
+        
+        # Parsear HTML y obtener cada uno de los resultados para iterar
+        getpage_soup= BeautifulSoup(raw_results, 'html.parser')
         all_results= getpage_soup.findAll('li', {'class':'products_list-item'})
-
-        # Explore each element to get information
+        
         for element in all_results:
+            
             contenido = json.loads(element.span['data-json'])
-            print('PRODUCT:')
-            print(contenido['name'])
-            print(contenido['brand'])
-            print(contenido['price']['f_price'])
-            print(contenido['price']['discount_percent'])
+
+            # Si el producto está disponible, obtener la informacion
+            if contenido['status'] != 'not_available':
+                print('PRODUCT:')
+                print(contenido['name'])
+                print(contenido['brand'])
+                print(contenido['price']['f_price'])
+                print(contenido['price']['discount_percent'])
+
         driver.quit()
 
 # Comprobar numero de argumentos
@@ -141,7 +154,7 @@ if __name__ == "__main__":
         buscador = Sailor()
         buscador.search_amazon(sys.argv[1], 7)
         buscador.formatearJSON()
-        
+        buscador.search_eci(sys.argv[1])
     else:
         print("Numero de argumento incorrecto. Uso del script:")
         print('python sailor.py "{}"'.format("TERMINO_DE_BUSQUEDA"))
