@@ -163,7 +163,7 @@ class ProductsScraper():
 
     def scrappingProductsListEci(self, raw_results):
 
-        soup = BeautifulSoup(raw_results, features='html.parser')
+        soup = BeautifulSoup(raw_results, features='lxml')
 
 
         prod_data = soup.find_all('li', attrs={"class": "products_list-item"})
@@ -174,16 +174,22 @@ class ProductsScraper():
             elem = pd.find('span', attrs={"class": 'dataholder'}).get('data-json', {})
             elem_object = json.loads(elem)
 
+            #rating = pd.find_all('a', recursive=True)#.find('a', attrs={"itemprop": 'aggregateRating'})
+            #rating = pd.find_all('div', attrs={"data-bv-show": 'inline_rating'}, recursive=True)#.find('a', attrs={"itemprop": 'aggregateRating'})
+            #rating = pd.find_all('a', attrs={"class": 'bv_main_container bv_hover'}, recursive=True)#.find('a', attrs={"itemprop": 'aggregateRating'})
+            #rating = pd.find_all('div', attrs={"class": 'bv_averageRating_component_container'})
+
+            image =  pd.find('img', attrs={"class": 'js_preview_image fade ls-is-cached lazyloaded'})
+            
 
             json_l.append({
                 "product": elem_object.get("name"),
-                 "brand": elem_object.get("brand"),
-                 "position": elem_object.get("position")
-                # "price":
-                # "discount_percent":
-                # "rating":
-                # "n_comments":
-                # "image":
+                "brand": elem_object.get("brand"),
+                "price": elem_object.get("price").get("f_price"),
+                "discount_percent": elem_object.get("price").get("discount_percent"),
+                "rating": None,
+                "n_comments": None,
+                "image": 'https:' + image.get('data-src') if image else None
             })
 
         f = open("data/eci_dataset.json", "w+", encoding='utf8')
@@ -191,38 +197,6 @@ class ProductsScraper():
         #f.write(str(json_l))
 
         f.close()
-
-
-    def scrappingProductsListEci_Deprecated(self, prod):
-
-        session = requests.Session()
-        session.cookies.set(**self.cookie)
-        #session.auth = ('user', 'pass')
-        #session.headers.update({'x-test': 'true'})
-
-        sleep(3)
-
-        url = self.constructLinkECI(prod)
-        print(url)
-
-        #try: 
-        page = session.get(url, headers=self.headers)
-        #if page.status_code == 200:
-        soup = BeautifulSoup(page.content, features="html.parser")
-
-        prod_data = soup.find_all('li', attrs={"class": "products_list-item"})
-        
-        json_l = []
-
-        for pd in prod_data:
-            json_l.append(pd)
-
-        f = open("data/eci_dataset.html", "w+", encoding='utf8')
-        #f.write(json.dumps(json_l, ensure_ascii=False))
-        f.write(str(soup))
-
-        f.close()
-
 
 
         
