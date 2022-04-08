@@ -61,7 +61,8 @@ class ProductsScraper():
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:77.0) Gecko/20100101 Firefox/77.0',
             'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/83.0.4103.97 Safari/537.36',
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36",
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582"
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.102 Safari/537.36 Edge/18.19582",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36"
         ]
         return random.choice(user_agent_list)
     
@@ -160,7 +161,39 @@ class ProductsScraper():
         })
 
 
-    def scrappingProductsListEci(self, prod):
+    def scrappingProductsListEci(self, raw_results):
+
+        soup = BeautifulSoup(raw_results, features='html.parser')
+
+
+        prod_data = soup.find_all('li', attrs={"class": "products_list-item"})
+        
+        json_l = []
+
+        for pd in prod_data:
+            elem = pd.find('span', attrs={"class": 'dataholder'}).get('data-json', {})
+            elem_object = json.loads(elem)
+
+
+            json_l.append({
+                "product": elem_object.get("name"),
+                 "brand": elem_object.get("brand"),
+                 "position": elem_object.get("position")
+                # "price":
+                # "discount_percent":
+                # "rating":
+                # "n_comments":
+                # "image":
+            })
+
+        f = open("data/eci_dataset.json", "w+", encoding='utf8')
+        f.write(json.dumps(json_l, ensure_ascii=False))
+        #f.write(str(json_l))
+
+        f.close()
+
+
+    def scrappingProductsListEci_Deprecated(self, prod):
 
         session = requests.Session()
         session.cookies.set(**self.cookie)
