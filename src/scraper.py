@@ -19,7 +19,7 @@ pscraper = ProductsScraper()
 
 
 #pscraper.scrappingProduct(searchlink)
-pscraper.scrappingProductsListEci(searchterm)
+pscraper.scrappingProductsListAmz(searchlink)
 
 
 

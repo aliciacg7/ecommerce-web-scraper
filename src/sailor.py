@@ -42,12 +42,10 @@ class Sailor():
     def search_amazon(self, item, n_paginas):
 
         # Solo puede haber 7 paginas
-        if(n_paginas-1 > 6):
+        if(n_paginas > 6):
             sys.exit("Número máximo de paginas en Amazon: 7")
-
-        # URLs con las paginas de Amazon
-        #urls = []
         
+        # Creamos el objeto ProductScraper
         pscraper = ProductsScraper()
 
         # Crear webbrowser y entrar en amazon
@@ -66,14 +64,14 @@ class Sailor():
         json_products = []
 
         # Navegar en las primeras n paginas de amazon
-        for y in range(0,n_paginas-1):
+        for y in range(1,n_paginas+1):
 
             # URL de la pagina actual
             currentPage = driver.current_url
             #urls.append(currentPage)
 
             # Scrapping de la pagina actual           
-            page_list = pscraper.scrappingProductsList(driver.current_url)
+            page_list = pscraper.scrappingProductsListAmz(currentPage)
             
             # Esperar a que cargue el boton de Siguiente pagina
             nextPageButton = self.esperarCarga(driver, "a", "class", 's-pagination-item s-pagination-next s-pagination-button s-pagination-separator"]', 3)
@@ -105,6 +103,7 @@ class Sailor():
     # Realizar busqueda en ECI 
     def search_eci(self, item):
 
+         # Creamos el objeto ProductScraper
         pscraper = ProductsScraper()
         
         # Crear webbrowser y 
@@ -112,7 +111,6 @@ class Sailor():
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-gpu')
         options.add_argument(pscraper.getUserAgent()) 
-        #options.add_argument(f'user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.79 Safari/537.36') #add to
         
         driver = webdriver.Chrome(service = Service(ChromeDriverManager().install()), options=options)
         driver.get('https://www.elcorteingles.es/')
@@ -128,29 +126,18 @@ class Sailor():
         
         # Esperar a que termine la validacion
         time.sleep(10)
+
+        # Aceptar de nuevo las cookies para cargar el resto de información
+        driver.find_element(by='xpath', value='//*[@id="cookies-agree"]').click()
+
+        time.sleep(2)
             
         # Obtener lista de los resultados de la busqueda
         raw_results = driver.find_element(by='id', value='products-list').get_attribute('innerHTML')
-        
-        # Parsear HTML y obtener cada uno de los resultados para iterar
-        # getpage_soup= BeautifulSoup(raw_results, 'html.parser')
-        # all_results= getpage_soup.findAll('li', {'class':'products_list-item'})
-        
-        # for element in all_results:
-            
-        #     contenido = json.loads(element.span['data-json'])
-
-        #     # Si el producto está disponible, obtener la informacion
-        #     if contenido['status'] != 'not_available':
-        #         print('PRODUCT:')
-        #         print(contenido['name'])
-        #         print(contenido['brand'])
-        #         print(contenido['price']['f_price'])
-        #         print(contenido['price']['discount_percent'])
 
 
         # Abrimos un fichero donde se guardarán los resultados
-        #f = open("data/eci_dataset.json", "w+", encoding='utf8')
+        f = open("data/eci_dataset.json", "w+", encoding='utf8')
         json_products = []
 
         # Scrapping de la pagina actual           
@@ -158,13 +145,13 @@ class Sailor():
         
         # Esperar a que cargue el boton de Siguiente pagina
 
-        # json_products += page_list
+        json_products += page_list
 
-        # driver.quit()
+        driver.quit()
 
-        # # Escribimos los resultados
-        # f.write(json.dumps(json_products, ensure_ascii=False))
-        # f.close()
+        # Escribimos los resultados
+        f.write(json.dumps(json_products, ensure_ascii=False))
+        f.close()
 
         driver.quit()
 
@@ -172,7 +159,7 @@ class Sailor():
 if __name__ == "__main__":
     if(len(sys.argv) == 2):
         buscador = Sailor()
-        #buscador.search_amazon(sys.argv[1], 7)
+        buscador.search_amazon(sys.argv[1], 2)
         #buscador.formatearJSON()
         buscador.search_eci(sys.argv[1])
     else:
