@@ -18,15 +18,26 @@ También es destacable la oportunidad de utilizar estas herramientas en datos re
 
 ## Instrucciones de uso
 
-El código permite al usuario generar un dataset a partir de un término de búsqueda de la siguiente manera:
+El código permite al usuario generar un dataset de productos a partir de un término de búsqueda.
+
+Para ejecutar el script es necesario instalar la siguientes bibliotecas:
 
 ```
-python src/sailor.py "playstation 4"
+pip install selenium
+pip install requests
+pip install beautifulsoup4
 ```
 
-Utilizando como ejemplo el comando superior, se generará un dataset de los resultados de la búsqueda "playstation 4" con los datos definidos en el siguiente apartado **Descripción de los datos**
+Seguidamente, procederemos a ejecutar el script de la siguiente manera:
 
-## Descripción
+```
+python src/sailor.py "sudadera negra"
+```
+
+Utilizando como ejemplo el comando superior, se generará un dataset de los resultados de la búsqueda "sudadera negra" con los datos definidos en el siguiente apartado.
+
+
+## Descripción de los datos
 
 Los datos que se extraen de los resultados de la búsqueda de Amazon son:
 
@@ -37,6 +48,9 @@ Los datos que se extraen de los resultados de la búsqueda de Amazon son:
 * **rating**: Valoración del producto sobre 5. Tipo: *Float*
 * **n_coments**: Número de comentarios de usuarios. Tipo: *Integer*
 * **image**: Url de la imagen principal del producto. Tipo: *String*
+* **express_delivery**: Si el producto tiene opción de envío express. Tipo: *Boolean*
+* **ecommerce**: Código de la tienda a la que pertenece el producto. Tipo: *String*
+
 
 ## Futuros pasos
 
