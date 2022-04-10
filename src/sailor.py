@@ -27,7 +27,6 @@ class Sailor():
         params_busqueda = '//{}[@{}="{}'.format(tipo_elemento, atributo, valor)
 
         try:
-            # Esperar a que cargue el boton de la siguiente pagina
             elemento = WebDriverWait(webdriver, timeout).until(EC.presence_of_element_located((By.XPATH, params_busqueda)))
 
             return elemento
@@ -36,20 +35,11 @@ class Sailor():
             print("Loading took too much time to: \n{}".format(params_busqueda))
             print(webdriver.current_url)
             return False
-            #sys.exit("Error message")
 
     
     # Realizar busqueda en Amazon 
     def search_amazon(self, item, n_paginas):
-
-        # Solo puede haber 7 paginas
-        if(n_paginas > 6):
-            sys.exit("Número máximo de paginas en Amazon: 7")
         
-        # Numero de paginas pendientes por buscar
-        pages_left = n_paginas
-
-        # Creamos el objeto ProductScraper
         pscraper = ProductsScraper()
 
         # Crear webbrowser y entrar en amazon
@@ -63,19 +53,37 @@ class Sailor():
         search_box = driver.find_element(by="id", value='twotabsearchtextbox').send_keys(item)
         search_button = driver.find_element(by="id", value="nav-search-submit-text").click()
 
-        # Abrimos un fichero donde se guardarán los resultados
-        f = open("data/amazon_dataset.json", "w+", encoding='utf8')
         json_products = []
 
+        # Esperamos a que cargue la paginación
+        pagesInfo = self.esperarCarga(driver, "div", "class", 'a-section a-text-center s-pagination-container"]', 3)
+                
+        # Comprobamos si existen más paginas además de la principal o el usuario ha introducido
+        # un número superior a las páginas existentes
+        if pagesInfo != False:
+            total_pages = int(BeautifulSoup(pagesInfo.get_attribute('outerHTML'), 'html.parser').find_all(attrs={"class": 's-pagination-item'}, recursive=True)[-2].string)
+
+        else:
+            total_pages = 1
+
+        if n_paginas > total_pages:
+            print(f"Info: Numero de paginas especificado mayor al numero de paginas existentes, se devolverán datos de las paginas existentes: {total_pages}.")
+            n_paginas = total_pages
+
+        pages_left = n_paginas
+        
         # Navegar en las primeras n paginas de amazon
         while True:
 
             # URL de la pagina actual
             currentPage = driver.current_url
-            #urls.append(currentPage)
 
             # Scrapping de la pagina actual           
             page_list = pscraper.scrappingProductsListAmz(currentPage)
+            json_products += page_list
+
+            # Actualizar el numero de paginas pendientes por revisar
+            pages_left = pages_left - 1
             
             # Si no quedan más paginas por explorar, salir del bucle
             if pages_left == 0:
@@ -85,11 +93,10 @@ class Sailor():
             nextPageButton = self.esperarCarga(driver, "a", "class", 's-pagination-item s-pagination-next s-pagination-button s-pagination-separator"]', 3)
             nextPageButton.click()
 
-            json_products += page_list
-
         driver.quit()
 
         # Escribimos los resultados
+        f = open("data/amazon_dataset.json", "w+", encoding='utf8')
         f.write(json.dumps(json_products, ensure_ascii=False))
         f.close()
 
@@ -111,13 +118,9 @@ class Sailor():
     # Realizar busqueda en ECI 
     def search_eci(self, item, n_pages):
 
-         # Creamos el objeto ProductScraper
         pscraper = ProductsScraper()
         
-        # Numero de paginas pendientes por buscar
-        pages_left = n_pages
-        
-        # Crear webbrowser y 
+        # Crear webbrowser y entrar en el corte inglés
         options = webdriver.ChromeOptions()
         options.add_argument('--no-sandbox')
         options.add_argument('--disable-gpu')
@@ -138,67 +141,78 @@ class Sailor():
         # Esperar a que termine la validacion
         time.sleep(10)
 
-        # Abrimos un fichero donde se guardarán los resultados
-        f = open("eci_dataset.json", "w+", encoding='utf8')
         json_products = []
         
-        # Obtenemos el número de páginas disponibles
+        # Comprobamos si existen más paginas además de la principal o el usuario ha introducido
+        # un número superior a las páginas existentes
         pagesInfo = self.esperarCarga(driver, "div", "class", 'pagination c12 js-pagination"]', 3)
                 
-        # Si existen más paginas además de la principal
         if pagesInfo != False:
+            total_pages = int(BeautifulSoup(pagesInfo.get_attribute('outerHTML'), 'html.parser').div['data-pagination-total'])
+
+        else:
+            total_pages = 1
             
-            total_pages= int(BeautifulSoup(pagesInfo.get_attribute('outerHTML'), 'html.parser').div['data-pagination-total'])
+        if n_pages > total_pages:
+            print(f"Info: Numero de paginas especificado mayor al numero de paginas existentes, se devolverán datos de las paginas existentes: {total_pages}.")
+            n_pages = total_pages
+
+        pages_left = n_pages
             
-            # Comprobar que el usuario no pide más paginas de las que existen
-            if n_pages > total_pages:
-                print("Info: Numero de paginas especificado mayor al numero de paginas existentes, se devolverán datos de las paginas existentes.")
-                n_pages = total_pages
-                
-            while True:
-                
-                # Aceptar de nuevo las cookies para cargar el resto de información
-                accept_cookies = self.esperarCarga(driver, "a", "id", 'cookies-agree"]', 3)
-                accept_cookies.click()
+        while True:
+            
+            # Aceptar de nuevo las cookies para cargar el resto de información
+            accept_cookies = self.esperarCarga(driver, "a", "id", 'cookies-agree"]', 3)
+            accept_cookies.click()
 
-                time.sleep(2)
+            time.sleep(2)
 
-                # Obtener lista de los resultados de la busqueda
-                raw_results = driver.find_element(by='id', value='products-list').get_attribute('innerHTML')
+            # Obtener lista de los resultados de la busqueda
+            raw_results = driver.find_element(by='id', value='products-list').get_attribute('innerHTML')
+            
+            page_list = pscraper.scrappingProductsListEci(raw_results)
+            json_products += page_list
+            
+            # Actualizar el numero de paginas pendientes por revisar
+            pages_left = pages_left - 1
+            
+            # Si no quedan más paginas por explorar, salir del bucle
+            if pages_left == 0:
+                break
                 
-                page_list = pscraper.scrappingProductsListEci(raw_results)
-                
-                # Actualizar el numero de paginas pendientes por revisar
-                pages_left = pages_left - 1
-                
-                # Si no quedan más paginas por explorar, salir del bucle
-                if pages_left == 0:
-                    break
-                    
-                # Eliminar las cookies antes de ir a la siguiente pagina para evitar bloqueos
-                driver.delete_all_cookies()
-                
-                # Esperar a que cargue el boton de Siguiente pagina
-                next_page = self.esperarCarga(driver, "a", "class", 'event _pagination_link"]', 3)
-                driver.execute_script("arguments[0].click();", next_page)
-                
-                # Esperar a que termine la validacion
-                time.sleep(10)
-                
-                json_products += page_list  
+            # Eliminar las cookies antes de ir a la siguiente pagina para evitar bloqueos
+            driver.delete_all_cookies()
+            
+            # Esperar a que cargue el boton de Siguiente pagina
+            next_page = self.esperarCarga(driver, "a", "class", 'event _pagination_link"]', 3)
+            driver.execute_script("arguments[0].click();", next_page)
+            
+            # Esperar a que termine la validacion
+            time.sleep(10)
 
-    driver.quit()
+        driver.quit()
+
+        # Escribimos los resultados
+        f = open("data/eci_dataset.json", "w+", encoding='utf8')
+        f.write(json.dumps(json_products, ensure_ascii=False))
+        f.close()
+
 
 # Comprobar numero de argumentos
 if __name__ == "__main__":
     if(len(sys.argv) == 3):
-        buscador = Sailor()
-        buscador.search_amazon(sys.argv[1], sys.argv[2])
-        #buscador.formatearJSON()
-        buscador.search_eci(sys.argv[1], sys.argv[2])
 
-    elif (len(sys.argv) == 3 and int(sys.argv[2]) <= 0):
-        print("Numero de paginas a buscar incorrecto")
+        searchterm = sys.argv[1]
+        searchpages = int(sys.argv[2])
+
+        if (searchpages <= 0):
+            print("Numero de paginas a buscar incorrecto")
+        
+        else:
+            buscador = Sailor()
+            buscador.search_amazon(searchterm, searchpages)
+            buscador.search_eci(searchterm, searchpages)
+
     else:
-        print("Numero de argumento incorrecto. Uso del script:")
-        print('python sailor.py "{}"'.format("TERMINO_DE_BUSQUEDA"))
+        print("Numero de argumentos incorrecto. Uso del script:")
+        print(f'\t> python sailor.py \"TERMINO_DE_BUSQUEDA\" \"NUM_PAGINAS\"')

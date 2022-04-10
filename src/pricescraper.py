@@ -129,7 +129,7 @@ class ProductsScraper():
 
             # Treating prices
             price_num = None
-            discount_percent = None
+            discount_percent = 0
 
             if prices:
                 maketrans = prices.string.maketrans
