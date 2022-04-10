@@ -2,8 +2,8 @@ import re
 from reprlib import recursive_repr
 from bs4 import BeautifulSoup
 import requests
-import json
 import random
+import json
 import re
 from time import sleep
 
@@ -58,14 +58,6 @@ class ProductsScraper():
         return random.choice(user_agent_list)    
 
 
-    def constructLinkAmazon(self, searchterm):
-        searchitem_parsed = ("+").join(searchterm.split(" "))
-        return f"https://www.amazon.es/s?k={searchitem_parsed}"
-
-    def constructLinkECI(self, searchterm):
-        searchitem_parsed = ("%20").join(searchterm.split(" "))
-        return f"https://www.elcorteingles.es/search/?s={searchitem_parsed}"
-
     def scrappingProductsListEci(self, raw_results):
 
         soup = BeautifulSoup(raw_results, features='lxml')
@@ -73,7 +65,7 @@ class ProductsScraper():
         # Obtenemos la lista de productos tras la búsqueda
         prod_data = soup.find_all('li', attrs={"class": "products_list-item"})
         
-        json_l = []
+        prod_csv = ""
 
         for pd in prod_data:
             elem = pd.find('span', attrs={"class": 'dataholder'}).get('data-json', {})
@@ -84,7 +76,7 @@ class ProductsScraper():
             image =  pd.find('img', attrs={"class": 'js_preview_image'})
 
 
-            json_l.append({
+            obj = {
                 "product": elem_object.get("name"),
                 "brand": elem_object.get("brand"),
                 "price": elem_object.get("price").get("f_price"),
@@ -94,10 +86,11 @@ class ProductsScraper():
                 "image": 'https:' + image.get('data-src') if image else None,
                 "express_delivery": elem_object.get("badges").get("express_delivery"),
                 "ecommerce": "ECI"
-            })
+            }
 
+            prod_csv += f"\"{obj['product']}\",\"{obj['brand']}\",{obj['price']},{obj['discount_percent']},{obj['rating']},{obj['n_comments']},\"{obj['image']}\",{obj['express_delivery']},\"{obj['ecommerce']}\"\n"
 
-        return json_l
+        return prod_csv
 
 
         
@@ -112,7 +105,7 @@ class ProductsScraper():
          # Obtenemos la lista de productos tras la búsqueda
         prod_data = soup.find_all('div', attrs={"class": 's-card-container'})
         
-        json_l = []
+        prod_csv = ""
 
 
         for pd in prod_data:
@@ -144,9 +137,9 @@ class ProductsScraper():
             # Comprobamos si es un anuncio para no añadirlo a la lista
             if  products and price_num and rating and image:
 
-                json_l.append({
-                    "product": products.string if products else None,
-                    "brand": brand.string if brand else None,
+                obj = {
+                    "product": products.string.replace(',', '') if products else None,
+                    "brand": brand.string.replace(',', '') if brand else None,
                     "price": price_num,
                     "discount_percent": discount_percent,
                     "rating": float(rating.string.split('de')[0].replace(',', '.')) if rating and 'de 5 estrellas' in rating.string else None,
@@ -154,9 +147,21 @@ class ProductsScraper():
                     "image": image.get('src') if image else None,
                     "express_delivery": express_delivery.get("aria-label")=="Amazon Prime" if express_delivery else False,
                     "ecommerce": "AMZ"
-                })
+                }
 
-        return json_l
+                prod_csv += f"\"{obj['product']}\",\"{obj['brand']}\",{obj['price']},{obj['discount_percent']},{obj['rating']},{obj['n_comments']},\"{obj['image']}\",{obj['express_delivery']},\"{obj['ecommerce']}\"\n"
+
+        return prod_csv
+
+
+
+    # def constructLinkAmazon(self, searchterm):
+    #     searchitem_parsed = ("+").join(searchterm.split(" "))
+    #     return f"https://www.amazon.es/s?k={searchitem_parsed}"
+
+    # def constructLinkECI(self, searchterm):
+    #     searchitem_parsed = ("%20").join(searchterm.split(" "))
+    #     return f"https://www.elcorteingles.es/search/?s={searchitem_parsed}"
 
     # def scrappingProduct(self, prodlink):
     #     session = requests.Session()

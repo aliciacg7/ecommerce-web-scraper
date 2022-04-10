@@ -10,7 +10,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import sys
-import json
 import time
 
 from pricescraper import ProductsScraper
@@ -53,7 +52,7 @@ class Sailor():
         search_box = driver.find_element(by="id", value='twotabsearchtextbox').send_keys(item)
         search_button = driver.find_element(by="id", value="nav-search-submit-text").click()
 
-        json_products = []
+        csv_products = ""
 
         # Esperamos a que cargue la paginación
         pagesInfo = self.esperarCarga(driver, "div", "class", 'a-section a-text-center s-pagination-container"]', 3)
@@ -80,7 +79,7 @@ class Sailor():
 
             # Scrapping de la pagina actual           
             page_list = pscraper.scrappingProductsListAmz(currentPage)
-            json_products += page_list
+            csv_products += page_list
 
             # Actualizar el numero de paginas pendientes por revisar
             pages_left = pages_left - 1
@@ -95,25 +94,9 @@ class Sailor():
 
         driver.quit()
 
-        # Escribimos los resultados
-        f = open("data/amazon_dataset.json", "w+", encoding='utf8')
-        f.write(json.dumps(json_products, ensure_ascii=False))
-        f.close()
+        return csv_products
 
 
-    # Formatear archivo de datos
-    def formatearJSON(self):
-
-        # Abrir archivo
-        f_read = open("data/amazon_dataset.json", "r", encoding='utf8')
-        unparsed = json.load(f_read)
-        f_read.close()
-
-        parsed = json.dumps(unparsed, indent=1)
-
-        f_write = open("data/amazon_dataset.json", "w+", encoding='utf8')
-        f_write.write(parsed)
-        f_write.close()
         
     # Realizar busqueda en ECI 
     def search_eci(self, item, n_pages):
@@ -141,7 +124,7 @@ class Sailor():
         # Esperar a que termine la validacion
         time.sleep(10)
 
-        json_products = []
+        csv_products = ""
         
         # Comprobamos si existen más paginas además de la principal o el usuario ha introducido
         # un número superior a las páginas existentes
@@ -171,7 +154,7 @@ class Sailor():
             raw_results = driver.find_element(by='id', value='products-list').get_attribute('innerHTML')
             
             page_list = pscraper.scrappingProductsListEci(raw_results)
-            json_products += page_list
+            csv_products += page_list
             
             # Actualizar el numero de paginas pendientes por revisar
             pages_left = pages_left - 1
@@ -192,10 +175,7 @@ class Sailor():
 
         driver.quit()
 
-        # Escribimos los resultados
-        f = open("data/eci_dataset.json", "w+", encoding='utf8')
-        f.write(json.dumps(json_products, ensure_ascii=False))
-        f.close()
+        return csv_products
 
 
 # Comprobar numero de argumentos
@@ -210,8 +190,16 @@ if __name__ == "__main__":
         
         else:
             buscador = Sailor()
-            buscador.search_amazon(searchterm, searchpages)
-            buscador.search_eci(searchterm, searchpages)
+
+            amz_data = buscador.search_amazon(searchterm, searchpages)
+            eci_data = buscador.search_eci(searchterm, searchpages)
+
+            f = open("data/ecommerce_products_dataset.csv", "w+", encoding='utf8')
+            f.write("\"product\",\"brand\",\"price\",\"discount_percent\",\"rating\",\"n_comments\",\"image\",\"express_delivery\",\"ecommerce\",\n")
+            f.write(amz_data)
+            f.write(eci_data)
+
+            f.close()
 
     else:
         print("Numero de argumentos incorrecto. Uso del script:")
