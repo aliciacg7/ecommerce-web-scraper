@@ -1,22 +1,37 @@
 # Práctica 1: Web scraping
 
-## Introducción
+# Contexto
 
-Este código forma parte de la **PRA1** de la asignatura Tipología y Ciclo de Vida de los Datos, en la que se utilizan técnicas de web scrapping en Python con BeatifulSoup y Selenium para la obtención  de datos de productos de Amazon y generar un dataset con ellos. 
+Este código forma parte de la **PRA1** de la asignatura Tipología y Ciclo de Vida de los Datos, en la que se utilizan técnicas de web scrapping en Python con BeatifulSoup y Selenium para la obtención  de datos de productos de Amazon y El Corte Ingles (ECI) y generar un dataset con ellos. 
 
 Esta práctica ha sido realizada por **Alicia Contreras** y **Daniel García**.
 
-## Motivación
+# Titulo
 
-El principal motivo del desarrollo de esta herramienta es facilitar una búsqueda preliminar de productos online utilizando técnicas de ciencia de datos en una tarea que se suele hacer manualmente. A continuación se describen otras motivaciones para la utilización de esta herramienta:
+**ecommerceWeb**
+# Descripción del dataset
 
-* Realizar un análisis comparativo de precios de productos con respecto a otras webs de e-commerce
-* Realizar un estudio del posicionamiento de productos y del funcionamiento de los buscadores en webs de e-commerce
-* Obtención de datasets de imágenes para entrenamiento de algoritmos de clasificación, categorizados con la clase referente a la palabra de búsqueda utilizada por el usuario
+Los datos que se extraen de los resultados de la búsqueda de Amazon son:
 
-También es destacable la oportunidad de utilizar estas herramientas en datos reales.
+* **product**: Nombre del producto. Tipo: *String*
+* **brand**: Marca del producto. Tipo: *String*
+* **price**: Precio del producto. Tipo: *Float*
+* **discount_percent**: Porcentaje de descuento aplicado. Tipo: *Float*
+* **rating**: Valoración del producto sobre 5. Tipo: *Float*
+* **n_coments**: Número de comentarios de usuarios. Tipo: *Integer*
+* **image**: Url de la imagen principal del producto. Tipo: *String*
+* **express_delivery**: Si el producto tiene opción de envío express. Tipo: *Boolean*
+* **ecommerce**: Código de la tienda a la que pertenece el producto. Tipo: *String*
 
-## Instrucciones de uso
+# Representación gráfica
+
+
+# Contenido
+
+El proyecto se compone de 3 scripts dentro del directorio "src":
+
+*   sailor.py: funciones encargadas de interactuar con los portales de eCommerce para introducir los criterios de búsquedas y navegar entre las distintas páginas de resultados.
+*   pricescraper.py: funciones encargadas de parsear datos HTML para obtener la información de los productos para ser almacenadas posteriormente en los ficheros correspondentes.
 
 El código permite al usuario generar un dataset de productos a partir de un término de búsqueda.
 
@@ -36,28 +51,20 @@ python src/sailor.py "sudadera negra"
 
 Utilizando como ejemplo el comando superior, se generará un dataset de los resultados de la búsqueda "sudadera negra" con los datos definidos en el siguiente apartado.
 
-
-## Descripción de los datos
-
-Los datos que se extraen de los resultados de la búsqueda de Amazon son:
-
-* **product**: Nombre del producto. Tipo: *String*
-* **brand**: Marca del producto. Tipo: *String*
-* **price**: Precio del producto. Tipo: *Float*
-* **discount_percent**: Porcentaje de descuento aplicado. Tipo: *Float*
-* **rating**: Valoración del producto sobre 5. Tipo: *Float*
-* **n_coments**: Número de comentarios de usuarios. Tipo: *Integer*
-* **image**: Url de la imagen principal del producto. Tipo: *String*
-* **express_delivery**: Si el producto tiene opción de envío express. Tipo: *Boolean*
-* **ecommerce**: Código de la tienda a la que pertenece el producto. Tipo: *String*
+# Agradecimientos
 
 
-## Futuros pasos
+# Inspiración
 
-Los siguientes pasos a seguir son 
+El principal motivo del desarrollo de esta herramienta es facilitar una búsqueda preliminar de productos online utilizando técnicas de ciencia de datos en una tarea que se suele hacer manualmente. A continuación se describen otras motivaciones para la utilización de esta herramienta:
 
-*   La búsqueda de productos en más tiendas online, pudiendo de esta manera comparar productos en función del venededor.
-## Licencia
+* Realizar un análisis comparativo de precios de productos con respecto a otras webs de e-commerce
+* Realizar un estudio del posicionamiento de productos y del funcionamiento de los buscadores en webs de e-commerce
+* Obtención de datasets de imágenes para entrenamiento de algoritmos de clasificación, categorizados con la clase referente a la palabra de búsqueda utilizada por el usuario
+
+También es destacable la oportunidad de utilizar estas herramientas en datos reales.
+
+# Licencia
 
 <ins>Attribution-ShareAlike 4.0 International (**CC BY-SA 4.0**):</ins>
 
