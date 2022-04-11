@@ -41,7 +41,8 @@ Utilizando como ejemplo el comando superior, se generará un dataset de los resu
 
 Los datos que se extraen de los resultados de la búsqueda de Amazon son:
 
-* **product**: Nombre del producto. Tipo: *String*
+* **product**: Témino de búsqueda. Se corresponde con el producto buscado. Tipo: *String*
+* **name**: Nombre del producto. Tipo: *String*
 * **brand**: Marca del producto. Tipo: *String*
 * **price**: Precio del producto. Tipo: *Float*
 * **discount_percent**: Porcentaje de descuento aplicado. Tipo: *Float*
