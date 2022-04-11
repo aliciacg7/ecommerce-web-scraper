@@ -46,7 +46,7 @@ Los datos que se extraen de los resultados de la búsqueda de Amazon son:
 * **price**: Precio del producto. Tipo: *Float*
 * **discount_percent**: Porcentaje de descuento aplicado. Tipo: *Float*
 * **rating**: Valoración del producto sobre 5. Tipo: *Float*
-* **n_coments**: Número de comentarios de usuarios. Tipo: *Integer*
+* **n_comments**: Número de comentarios de usuarios. Tipo: *Integer*
 * **image**: Url de la imagen principal del producto. Tipo: *String*
 * **express_delivery**: Si el producto tiene opción de envío express. Tipo: *Boolean*
 * **ecommerce**: Código de la tienda a la que pertenece el producto. Tipo: *String*
