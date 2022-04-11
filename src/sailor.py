@@ -12,6 +12,7 @@ from bs4 import BeautifulSoup
 import sys
 import time
 import os
+import csv
 
 from pricescraper import ProductsScraper
 
@@ -53,7 +54,7 @@ class Sailor():
         search_box = driver.find_element(by="id", value='twotabsearchtextbox').send_keys(item)
         search_button = driver.find_element(by="id", value="nav-search-submit-text").click()
 
-        csv_products = ""
+        csv_products = []
 
         # Esperamos a que cargue la paginación
         pagesInfo = self.esperarCarga(driver, "div", "class", 'a-section a-text-center s-pagination-container"]', 3)
@@ -125,7 +126,7 @@ class Sailor():
         # Esperar a que termine la validacion
         time.sleep(10)
 
-        csv_products = ""
+        csv_products = []
         
         # Comprobamos si existen más paginas además de la principal o el usuario ha introducido
         # un número superior a las páginas existentes
@@ -196,16 +197,18 @@ if __name__ == "__main__":
             eci_data = buscador.search_eci(searchterm, searchpages)
 
             filepath = "data/ecommerce_products_dataset.csv"
-            f = open(filepath, "a", encoding='utf8')
+            with open(filepath, "a", encoding='utf8') as f:
 
-            # Si el fichero csv está vacío, creamos la cabecera
-            if os.stat(filepath).st_size == 0:
-                f.write("\"product\",\"name\",\"brand\",\"price\",\"discount_percent\",\"rating\",\"n_comments\",\"image\",\"express_delivery\",\"ecommerce\",\n")
-                
-            f.write(amz_data)
-            f.write(eci_data)
+                writer = csv.writer(f)
+                f = open(filepath, "a", encoding='utf8')
 
-            f.close()
+                # Si el fichero csv está vacío, creamos la cabecera
+                if os.stat(filepath).st_size == 0:
+                    writer.writerow(["product","name","brand","price","discount_percent","rating","n_comments","image","express_delivery","ecommerce"])
+                    
+                writer.writerows(amz_data)
+                writer.writerows(eci_data)
+
 
     else:
         print("Numero de argumentos incorrecto. Uso del script:")

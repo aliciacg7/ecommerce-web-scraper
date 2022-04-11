@@ -65,7 +65,7 @@ class ProductsScraper():
         # Obtenemos la lista de productos tras la búsqueda
         prod_data = soup.find_all('li', attrs={"class": "products_list-item"})
         
-        prod_csv = ""
+        prod_csv = []
 
         for pd in prod_data:
             elem = pd.find('span', attrs={"class": 'dataholder'}).get('data-json', {})
@@ -88,7 +88,7 @@ class ProductsScraper():
                 "ecommerce": "ECI"
             }
 
-            prod_csv += f"\"{item}\",\"{obj['product']}\",\"{obj['brand']}\",{obj['price']},{obj['discount_percent']},{obj['rating']},{obj['n_comments']},\"{obj['image']}\",{obj['express_delivery']},\"{obj['ecommerce']}\"\n"
+            prod_csv.append([item, obj['product'], obj['brand'], obj['price'], obj['discount_percent'], obj['rating'], obj['n_comments'], obj['image'], obj['express_delivery'], obj['ecommerce']])
 
         return prod_csv
 
@@ -100,12 +100,12 @@ class ProductsScraper():
         session.cookies.set(**self.cookie)
 
         page = session.get(url, headers=self.headers)
-        soup = BeautifulSoup(page.content, features="html.parser")
+        soup = BeautifulSoup(page.content, features='lxml')
 
          # Obtenemos la lista de productos tras la búsqueda
         prod_data = soup.find_all('div', attrs={"class": 's-card-container'})
         
-        prod_csv = ""
+        prod_csv = []
 
 
         for pd in prod_data:
@@ -149,7 +149,7 @@ class ProductsScraper():
                     "ecommerce": "AMZ"
                 }
 
-                prod_csv += f"\"{item}\",\"{obj['product']}\",\"{obj['brand']}\",{obj['price']},{obj['discount_percent']},{obj['rating']},{obj['n_comments']},\"{obj['image']}\",{obj['express_delivery']},\"{obj['ecommerce']}\"\n"
+                prod_csv.append([item, obj['product'], obj['brand'], obj['price'], obj['discount_percent'], obj['rating'], obj['n_comments'], obj['image'], obj['express_delivery'], obj['ecommerce']])
 
         return prod_csv
 
