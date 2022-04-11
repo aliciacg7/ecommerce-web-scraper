@@ -58,14 +58,14 @@ class ProductsScraper():
         return random.choice(user_agent_list)    
 
 
-    def scrappingProductsListEci(self, raw_results):
+    def scrappingProductsListEci(self, raw_results, item):
 
         soup = BeautifulSoup(raw_results, features='lxml')
 
         # Obtenemos la lista de productos tras la búsqueda
         prod_data = soup.find_all('li', attrs={"class": "products_list-item"})
         
-        prod_csv = ""
+        prod_csv = []
 
         for pd in prod_data:
             elem = pd.find('span', attrs={"class": 'dataholder'}).get('data-json', {})
@@ -77,8 +77,8 @@ class ProductsScraper():
 
 
             obj = {
-                "product": elem_object.get("name"),
-                "brand": elem_object.get("brand"),
+                "product": elem_object.get("name").replace(',', ''),
+                "brand": elem_object.get("brand").replace(',', ''),
                 "price": elem_object.get("price").get("f_price"),
                 "discount_percent": elem_object.get("price").get("discount_percent"),
                 "rating": float(rating.get('content')) if rating else None,
@@ -88,24 +88,24 @@ class ProductsScraper():
                 "ecommerce": "ECI"
             }
 
-            prod_csv += f"\"{obj['product']}\",\"{obj['brand']}\",{obj['price']},{obj['discount_percent']},{obj['rating']},{obj['n_comments']},\"{obj['image']}\",{obj['express_delivery']},\"{obj['ecommerce']}\"\n"
+            prod_csv.append([item, obj['product'], obj['brand'], obj['price'], obj['discount_percent'], obj['rating'], obj['n_comments'], obj['image'], obj['express_delivery'], obj['ecommerce']])
 
         return prod_csv
 
 
         
-    def scrappingProductsListAmz(self, url):
+    def scrappingProductsListAmz(self, url, item):
 
         session = requests.Session()
         session.cookies.set(**self.cookie)
 
         page = session.get(url, headers=self.headers)
-        soup = BeautifulSoup(page.content, features="html.parser")
+        soup = BeautifulSoup(page.content, features='lxml')
 
          # Obtenemos la lista de productos tras la búsqueda
         prod_data = soup.find_all('div', attrs={"class": 's-card-container'})
         
-        prod_csv = ""
+        prod_csv = []
 
 
         for pd in prod_data:
@@ -149,7 +149,7 @@ class ProductsScraper():
                     "ecommerce": "AMZ"
                 }
 
-                prod_csv += f"\"{obj['product']}\",\"{obj['brand']}\",{obj['price']},{obj['discount_percent']},{obj['rating']},{obj['n_comments']},\"{obj['image']}\",{obj['express_delivery']},\"{obj['ecommerce']}\"\n"
+                prod_csv.append([item, obj['product'], obj['brand'], obj['price'], obj['discount_percent'], obj['rating'], obj['n_comments'], obj['image'], obj['express_delivery'], obj['ecommerce']])
 
         return prod_csv
 

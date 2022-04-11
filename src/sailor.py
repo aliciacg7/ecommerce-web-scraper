@@ -11,6 +11,8 @@ from selenium.webdriver.common.by import By
 from bs4 import BeautifulSoup
 import sys
 import time
+import os
+import csv
 
 from pricescraper import ProductsScraper
 
@@ -37,7 +39,7 @@ class Sailor():
 
     
     # Realizar busqueda en Amazon 
-    def search_amazon(self, item, n_paginas):
+    def search_amazon(self, item, n_pages):
         
         pscraper = ProductsScraper()
 
@@ -52,7 +54,7 @@ class Sailor():
         search_box = driver.find_element(by="id", value='twotabsearchtextbox').send_keys(item)
         search_button = driver.find_element(by="id", value="nav-search-submit-text").click()
 
-        csv_products = ""
+        csv_products = []
 
         # Esperamos a que cargue la paginación
         pagesInfo = self.esperarCarga(driver, "div", "class", 'a-section a-text-center s-pagination-container"]', 3)
@@ -65,11 +67,11 @@ class Sailor():
         else:
             total_pages = 1
 
-        if n_paginas > total_pages:
+        if n_pages > total_pages:
             print(f"Info: Numero de paginas especificado mayor al numero de paginas existentes, se devolverán datos de las paginas existentes: {total_pages}.")
-            n_paginas = total_pages
+            n_pages = total_pages
 
-        pages_left = n_paginas
+        pages_left = n_pages
         
         # Navegar en las primeras n paginas de amazon
         while True:
@@ -78,7 +80,7 @@ class Sailor():
             currentPage = driver.current_url
 
             # Scrapping de la pagina actual           
-            page_list = pscraper.scrappingProductsListAmz(currentPage)
+            page_list = pscraper.scrappingProductsListAmz(currentPage, item)
             csv_products += page_list
 
             # Actualizar el numero de paginas pendientes por revisar
@@ -124,7 +126,7 @@ class Sailor():
         # Esperar a que termine la validacion
         time.sleep(10)
 
-        csv_products = ""
+        csv_products = []
         
         # Comprobamos si existen más paginas además de la principal o el usuario ha introducido
         # un número superior a las páginas existentes
@@ -153,7 +155,7 @@ class Sailor():
             # Obtener lista de los resultados de la busqueda
             raw_results = driver.find_element(by='id', value='products-list').get_attribute('innerHTML')
             
-            page_list = pscraper.scrappingProductsListEci(raw_results)
+            page_list = pscraper.scrappingProductsListEci(raw_results, item)
             csv_products += page_list
             
             # Actualizar el numero de paginas pendientes por revisar
@@ -194,12 +196,19 @@ if __name__ == "__main__":
             amz_data = buscador.search_amazon(searchterm, searchpages)
             eci_data = buscador.search_eci(searchterm, searchpages)
 
-            f = open("data/ecommerce_products_dataset.csv", "w+", encoding='utf8')
-            f.write("\"product\",\"brand\",\"price\",\"discount_percent\",\"rating\",\"n_comments\",\"image\",\"express_delivery\",\"ecommerce\",\n")
-            f.write(amz_data)
-            f.write(eci_data)
+            filepath = "data/ecommerce_products_dataset.csv"
+            with open(filepath, "a", encoding='utf8') as f:
 
-            f.close()
+                writer = csv.writer(f)
+                f = open(filepath, "a", encoding='utf8')
+
+                # Si el fichero csv está vacío, creamos la cabecera
+                if os.stat(filepath).st_size == 0:
+                    writer.writerow(["product","name","brand","price","discount_percent","rating","n_comments","image","express_delivery","ecommerce"])
+                    
+                writer.writerows(amz_data)
+                writer.writerows(eci_data)
+
 
     else:
         print("Numero de argumentos incorrecto. Uso del script:")
