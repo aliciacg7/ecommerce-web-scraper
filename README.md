@@ -31,11 +31,19 @@ pip install beautifulsoup4
 Seguidamente, procederemos a ejecutar el script de la siguiente manera:
 
 ```
-python src/sailor.py "sudadera negra"
+python main.py PARAMETRO_1 PARAMETRO_2
 ```
 
-Utilizando como ejemplo el comando superior, se generará un dataset de los resultados de la búsqueda "sudadera negra" con los datos definidos en el siguiente apartado.
+Donde:
 
+*   PARAMETRO_1: Ruta a un fichero txt con los términos de búsqueda a realizar, una por línea del fichero. Un ejemplo de fichero es "data/products_list.txt".
+*   PARAMETRO_2: Número de paginas de las que obtener los resultados de la búsqueda, tanto en Amazon como en El Corte Ingles.
+
+Utilizando como ejemplo el siguiente comando, se generará un dataset de los resultados de las búsquedas definidas en el fichero en las 4 primeras páginas de los portales. Este dataset estará formado por los datos definidos en el siguiente apartado.
+
+```
+python main.py data/products_list.txt 4
+```
 
 ## Descripción de los datos
 
@@ -52,12 +60,6 @@ Los datos que se extraen de los resultados de la búsqueda de Amazon son:
 * **express_delivery**: Si el producto tiene opción de envío express. Tipo: *Boolean*
 * **ecommerce**: Código de la tienda a la que pertenece el producto. Tipo: *String*
 
-
-## Futuros pasos
-
-Los siguientes pasos a seguir son 
-
-*   La búsqueda de productos en más tiendas online, pudiendo de esta manera comparar productos en función del venededor.
 ## Licencia
 
 <ins>Attribution-ShareAlike 4.0 International (**CC BY-SA 4.0**):</ins>
