@@ -76,3 +76,7 @@ Los datos que se extraen de los resultados de la búsqueda de Amazon son:
 <ins>Attribution-ShareAlike 4.0 International (**CC BY-SA 4.0**):</ins>
 
 El material de este repositorio puede ser compartido, modificado y utilizado para fines comerciales mientras se de el crédito apropiado al autor original. También debe indicarse si se han realizado modificaciones y, en caso afirmativo, dichas modificaciones deben ser publicadas bajo la misma licencia.
+
+## DOI
+
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.6449233.svg)](https://doi.org/10.5281/zenodo.6449233)
