@@ -38,13 +38,22 @@ python main.py PARAMETRO_1 PARAMETRO_2
 
 Donde:
 
-*   PARAMETRO_1: Ruta a un fichero txt con los términos de búsqueda a realizar, una por línea del fichero. Un ejemplo de fichero es "data/products_list.txt".
+*   PARAMETRO_1: Ruta a un fichero txt con los términos de búsqueda a realizar, una por línea del fichero. Un ejemplo de fichero es "data/product_list.txt". Ejemplo del contenido del fichero txt:
+```
+        sudadera negra
+        pantalón vaquero
+        zapatillas
+        hdmi
+        altavoz
+        peluche gato
+        collar
+```
 *   PARAMETRO_2: Número de paginas de las que obtener los resultados de la búsqueda, tanto en Amazon como en El Corte Ingles.
 
 Utilizando como ejemplo el siguiente comando, se generará un dataset de los resultados de las búsquedas definidas en el fichero en las 4 primeras páginas de los portales. Este dataset estará formado por los datos definidos en el siguiente apartado.
 
 ```
-python main.py data/products_list.txt 4
+python main.py data/product_list.txt 4
 ```
 
 ## Descripción de los datos
