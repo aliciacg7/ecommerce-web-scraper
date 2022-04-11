@@ -26,6 +26,7 @@ Para ejecutar el script es necesario instalar la siguientes bibliotecas:
 pip install selenium
 pip install requests
 pip install beautifulsoup4
+pip install webdriver_manager
 ```
 
 Seguidamente, procederemos a ejecutar el script de la siguiente manera:
