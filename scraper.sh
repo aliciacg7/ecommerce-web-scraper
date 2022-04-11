@@ -1,10 +1,12 @@
 #!/bin/bash
-filename='data/product_list.txt'
-n_pages=$1 
+
+# Pasamos por parámetro el fichero con productos y el número de páginas
+filename=$1
+n_pages=$2 
 
 while read line; do
-# reading each line
+# Leemos cada línea del fichero
 echo "-----Término de búsqueda: $line"
 
-python src/sailor.py "$line" $1
+python src/sailor.py "$line" $2
 done < $filename
